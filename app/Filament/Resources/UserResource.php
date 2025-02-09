@@ -13,6 +13,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Hash;
 
 class UserResource extends Resource
@@ -20,6 +21,12 @@ class UserResource extends Resource
     protected static ?string $model = User::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-user-circle';
+    // protected static ?string $navigationGroup = __('lang.settings');
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('lang.settings');
+    }
     public static function getNavigationBadge(): ?string
     {
         return static::$model::count();
@@ -33,16 +40,15 @@ class UserResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
+                Forms\Components\TextInput::make('name')->label(__('lang.name'))
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('email')
+                Forms\Components\TextInput::make('email')->label(__('lang.email'))
                     ->email()
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('password')
+                Forms\Components\TextInput::make('password')->label(__('lang.password'))
                     ->password()
-                    ->label(__('lang.password'))
                     ->dehydrateStateUsing(fn ($state) => Hash::make($state))
                     ->dehydrated(fn ($state) => filled($state))
                     ->required(fn (string $context): bool => $context === 'create')->confirmed(),
@@ -50,7 +56,7 @@ class UserResource extends Resource
                 Forms\Components\TextInput::make('password_confirmation')->password()
                     ->label(__('lang.confirm_password'))
                     ->required(fn (string $context): bool => $context === 'create'),
-                Select::make('roles')->multiple()
+                Select::make('roles')->multiple()->label(__('filament-spatie-roles-permissions::filament-spatie.field.roles'))
                 ->relationship('roles', 'name')
                 ->preload()
                 ->searchable()
@@ -61,11 +67,12 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                Tables\Columns\TextColumn::make('name')->label(__('lang.name'))
                     ->searchable(),
-                Tables\Columns\TextColumn::make('email')
+                Tables\Columns\TextColumn::make('email')->label(__('lang.email'))
                     ->searchable(),
-                Tables\Columns\BadgeColumn::make('roles.name')->label(__('lang.field.roles'))
+                Tables\Columns\BadgeColumn::make('roles.name')
+                ->label(__('filament-spatie-roles-permissions::filament-spatie.field.roles'))
                     ->colors([
                         'success' => 'admin', // Set color for 'admin' role
                         'info' => 'user', // Set color for 'customer' role
@@ -83,15 +90,23 @@ class UserResource extends Resource
             ])
             ->filters([
                 //
-                Tables\Filters\SelectFilter::make('roles')
+                Tables\Filters\SelectFilter::make('roles')->label(__('filament-spatie-roles-permissions::filament-spatie.field.roles'))
                 ->relationship('roles','name'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make()
+                ->hidden(fn (User $record): bool => $record->roles[0]->name === 'Admin')
+                ->requiresConfirmation(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()
+                    ->requiresConfirmation()
+                    ->action(function (Collection $records) {
+                        // Delete selected users except the admin user
+                        $records->where('email', '!=', 'admin@admin.com')->each->delete();
+                    }),
                 ]),
             ]);
     }
@@ -110,5 +125,17 @@ class UserResource extends Resource
             'create' => Pages\CreateUser::route('/create'),
             'edit' => Pages\EditUser::route('/{record}/edit'),
         ];
+    }
+    public static function getNavigationLabel(): string
+    {
+        return __('lang.user');
+    }
+    public static function getModelLabel(): string
+    {
+        return __('lang.users');
+    }
+    public static function getPluralModelLabel(): string
+    {
+        return __('lang.users'); // Plural label
     }
 }
