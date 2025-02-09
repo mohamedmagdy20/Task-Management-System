@@ -24,6 +24,7 @@ class User extends Authenticatable
         'password',
     ];
 
+    
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -43,4 +44,16 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+
+
+     /**
+    * Summary of tasks belongs to User
+    * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    */
+    public function tasks()
+    {
+        return $this->belongsToMany(Task::class,'task_users','user_id','task_id')
+        ->withPivot('status')->withTimestamps();
+    }
 }
