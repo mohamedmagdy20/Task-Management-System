@@ -42,9 +42,11 @@ class UserResource extends Resource
             ->schema([
                 Forms\Components\TextInput::make('name')->label(__('lang.name'))
                     ->required()
+                    ->live(onBlur: true)
                     ->maxLength(255),
                 Forms\Components\TextInput::make('email')->label(__('lang.email'))
                     ->email()
+                    ->different('email')
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('password')->label(__('lang.password'))
@@ -54,7 +56,7 @@ class UserResource extends Resource
                     ->required(fn (string $context): bool => $context === 'create')->confirmed(),
 
                 Forms\Components\TextInput::make('password_confirmation')->password()
-                    ->label(__('lang.confirm_password'))
+                    ->label(__('lang.password_confirmation'))
                     ->required(fn (string $context): bool => $context === 'create'),
                 Select::make('roles')->multiple()->label(__('filament-spatie-roles-permissions::filament-spatie.field.roles'))
                 ->relationship('roles', 'name')
@@ -72,14 +74,14 @@ class UserResource extends Resource
                 Tables\Columns\TextColumn::make('email')->label(__('lang.email'))
                     ->searchable(),
                 Tables\Columns\BadgeColumn::make('roles.name')
-                ->label(__('filament-spatie-roles-permissions::filament-spatie.field.roles'))
+                ->label(__('lang.status'))
                     ->colors([
-                        'success' => 'admin', // Set color for 'admin' role
-                        'info' => 'user', // Set color for 'customer' role
+                        'success' => 'admin', 
+                        'info' => 'user', 
                     ])
                     ->icons([
-                        'heroicon-o-shield-check' => 'super_admin', // Icon for 'admin' role
-                        'heroicon-m-user-circle' => 'Customer', // Icon for 'customer' role
+                        'heroicon-o-shield-check' => 'Admin', 
+                        'heroicon-m-user-circle' => 'User', 
                     ]),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()

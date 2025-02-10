@@ -56,4 +56,10 @@ class User extends Authenticatable
         return $this->belongsToMany(Task::class,'task_users','user_id','task_id')
         ->withPivot('status')->withTimestamps();
     }
+
+
+    public function getTasksCountAttribute()
+    {
+        return $this->tasks()->count();
+    }
 }

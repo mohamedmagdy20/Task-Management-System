@@ -10,8 +10,14 @@ class Task extends Model
     use HasFactory;
     protected $fillable= [
         'title',
+        'duedate',
+        'attachment',
         'description'
     ];
+    protected $casts = [
+        'attachment' => 'array',
+    ];
+ 
 
     /**
     * Summary of tasks belongs to User

@@ -126,6 +126,35 @@ class PermissionSeeder extends Seeder
                 'name'=>'reorder User',
                 'guard_name'=>'web'
             ],
+
+            [
+                'name'=>'view-any Task',
+                'guard_name'=>'web'
+            ],
+            [
+                'name'=>'view Task',
+                'guard_name'=>'web'
+            ],
+            [
+                'name'=>'create Task',
+                'guard_name'=>'web'
+            ],
+            [
+                'name'=>'update Task',
+                'guard_name'=>'web'
+            ],
+            [
+                'name'=>'delete Task',
+                'guard_name'=>'web'
+            ],
+            [
+                'name'=>'restore Task',
+                'guard_name'=>'web'
+            ],
+            [
+                'name'=>'force-delete Task',
+                'guard_name'=>'web'
+            ],
         ];
 
         foreach($data as $record)
