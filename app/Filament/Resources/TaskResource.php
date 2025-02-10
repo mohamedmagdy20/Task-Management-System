@@ -174,6 +174,10 @@ class TaskResource extends Resource
                 ]),
             ]);
     }
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['title','description'];
+    }
 
     public static function getRelations(): array
     {
