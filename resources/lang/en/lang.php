@@ -21,7 +21,11 @@ return [
     'header'=>'Header',
     'content'=>'Content',
     'complete_status'=>'Complete Task',
-    'mission_done'=>'Mission Complete'
+    'mission_done'=>'Mission Complete',
+    'task_assigned'=>'new task added to your queue',
+    'task_done'=>'Task Completed From '
+
+
 
 
 

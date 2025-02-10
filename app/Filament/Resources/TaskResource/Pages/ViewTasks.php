@@ -5,8 +5,10 @@ namespace App\Filament\Resources\TaskResource\Pages;
 use App\Filament\Resources\TaskResource;
 use App\Filament\Resources\TaskResource\RelationManagers\UsersRelationManager;
 use App\Models\TaskUser;
+use App\Models\User;
 use Filament\Actions;
 use Filament\Actions\Action;
+use Filament\Notifications\Actions\Action as NotificationAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 
@@ -32,6 +34,23 @@ class ViewTasks extends ViewRecord
                     $record->update([
                         'status'=>'complete'
                     ]);
+
+                    // database Notification
+                    $admins = User::role('Admin')->get();
+                    foreach($admins as $admin)
+                    {
+                        Notification::make()
+                        ->title(__('lang.task_done').auth()->user()->name)
+                        ->icon('heroicon-o-shopping-bag')
+                        ->body("**{$this->record->title}")
+                        ->actions([
+                            NotificationAction::make('View')
+                                ->url(TaskResource::getUrl( 'view', ['record' => $this->record])),
+                        ])
+                        ->sendToDatabase($admin);  
+                    } 
+                    // 
+
                     Notification::make()
                     ->success()
                     ->title(__('lang.mission_done'))

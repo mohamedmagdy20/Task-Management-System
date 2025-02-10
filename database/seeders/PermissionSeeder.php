@@ -169,6 +169,15 @@ class PermissionSeeder extends Seeder
             'name'=>'Admin',
             'guard_name'=>'web'
         ]);
+        $userRole =  Role::firstOrCreate([
+            'name'=>'User',
+            'guard_name'=>'web'
+            
+        ]);
         $adminRole->syncPermissions($allPermission);
+        $userRole->syncPermissions([
+            'view-any Task',
+            'view Task'
+        ]);
     }
 }
